@@ -1,0 +1,13 @@
+<%= if @winner != false do%>
+  The winner is <%= @winner %>
+  <button phx-click="reset">Reset</button>
+<% end %>
+<div class="ticTacToe">
+  <%= for { row_count, row } <- Enum.to_list(@board) do %>
+    <div class="column">
+      <%= for { column_count, space } <- Enum.to_list(row) do %>
+<span class="square" phx-value-row={row_count} phx-value-column={column_count} phx-click="select_square"><%= space %></span>
+      <% end %>
+    </div>
+  <% end %>
+</div>

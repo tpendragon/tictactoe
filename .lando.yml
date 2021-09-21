@@ -1,0 +1,5 @@
+name: tictactoe
+services:
+  database:
+    type: postgres:12
+    portforward: 9992
