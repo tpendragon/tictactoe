@@ -5,6 +5,10 @@ defmodule BoardState do
     Agent.start_link(fn -> initial_state()  end, name: __MODULE__)
   end
 
+  def subscribe() do
+    Phoenix.PubSub.subscribe(Tictactoe.PubSub, "board_state")
+  end
+
   def initial_board do
     %{
       "1" => %{ "1" => "", "2" => "", "3" => ""},
@@ -29,9 +33,16 @@ defmodule BoardState do
       |> Map.put(:turn, Board.next_turn(state.turn))
       |> Map.put(:winner, Board.winning_board(board))
     end)
+    broadcast_change
   end
 
   def reset do
     Agent.update(__MODULE__, fn _state -> initial_state() end)
+    broadcast_change
   end
+
+  def broadcast_change do
+    Phoenix.PubSub.broadcast(Tictactoe.PubSub, "board_state", %{event: "board_updated"})
+  end
+
 end
