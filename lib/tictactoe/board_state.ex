@@ -27,11 +27,15 @@ defmodule BoardState do
 
   def set_position(row, column, value) do
     Agent.update(__MODULE__, fn state ->
-      board = state.board |> put_in([row, column], value)
-      state
-      |> Map.put(:board, board)
-      |> Map.put(:turn, Board.next_turn(state.turn))
-      |> Map.put(:winner, Board.winning_board(board))
+      if get_in(state.board, [row, column]) == "" do
+        board = state.board |> put_in([row, column], value)
+        state
+        |> Map.put(:board, board)
+        |> Map.put(:turn, Board.next_turn(state.turn))
+        |> Map.put(:winner, Board.winning_board(board))
+      else
+        state
+      end
     end)
     broadcast_change
   end
