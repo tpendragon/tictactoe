@@ -1,6 +1,8 @@
 <%= if @winner != false do%>
   The winner is <%= @winner %>
   <button phx-click="reset">Reset</button>
+<% else %>
+  Current Player: <%= @turn %>
 <% end %>
 <div class="ticTacToe">
   <%= for { row_count, row } <- Enum.to_list(@board) do %>
