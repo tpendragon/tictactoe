@@ -1,7 +1,7 @@
 defmodule TictactoeWeb.GameLive do
   use TictactoeWeb, :live_view
 
-  def mount(_params, _session, socket) do
+  def mount(_, _, socket) do
     socket = socket |> update_board
     BoardState.subscribe()
     {:ok, socket}
@@ -9,27 +9,12 @@ defmodule TictactoeWeb.GameLive do
 
   def handle_info(%{event: "board_updated"}, socket) do
     socket = socket |> update_board
-    {:noreply, socket}
-  end
-
-  def handle_event("select_square", %{"column" => column, "row" => row }, socket = %{assigns: %{board: board, turn: turn, winner: false}}) do
-    BoardState.set_position(row, column, turn)
-    {:noreply, socket}
-  end
-
-  def handle_event("select_square", _value, socket), do: {:noreply, socket}
-
-  def handle_event("reset", _value, socket) do
-    BoardState.reset()
     { :noreply, socket }
   end
 
   def update_board(socket) do
     board_state = BoardState.get_board()
     socket
-    |> assign(:board, board_state.board)
-    |> assign(:turn, board_state.turn)
-    |> assign(:winner, board_state.winner)
+    |> assign(:board_state, board_state)
   end
-
 end

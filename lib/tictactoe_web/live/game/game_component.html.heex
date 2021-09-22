@@ -1,0 +1,17 @@
+<div class="board">
+  <%= if @board_state.winner != false do%>
+    The winner is <%= @board_state.winner %>
+    <button phx-click="reset" phx-target={@myself}>Reset</button>
+  <% else %>
+    Current Player: <%= @board_state.turn %>
+  <% end %>
+  <div class="ticTacToe">
+    <%= for { row_count, row } <- Enum.to_list(@board_state.board) do %>
+      <div class="column">
+        <%= for { column_count, space } <- Enum.to_list(row) do %>
+          <span class="square" phx-value-row={row_count} phx-value-column={column_count} phx-click="select_square" phx-target={@myself}><%= space %></span>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</div>
