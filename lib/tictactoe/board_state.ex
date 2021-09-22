@@ -18,21 +18,24 @@ defmodule BoardState do
   end
 
   def initial_state do
-    %{ board: initial_board(), turn: "X", winner: false }
+    %{ boards: %{1 => %{ board: initial_board(), turn: "X", winner: false }}}
   end
 
   def get_board do
-    Agent.get(__MODULE__, & &1)
+    Agent.get(__MODULE__, fn state ->
+      state.boards[1]
+    end)
   end
 
   def set_position(row, column, value) do
     Agent.update(__MODULE__, fn state ->
-      if get_in(state.board, [row, column]) == "" do
-        board = state.board |> put_in([row, column], value)
+      game_board = state.boards[1]
+      if get_in(game_board.board, [row, column]) == "" do
+        board = game_board.board |> put_in([row, column], value)
         state
-        |> Map.put(:board, board)
-        |> Map.put(:turn, Board.next_turn(state.turn))
-        |> Map.put(:winner, Board.winning_board(board))
+        |> put_in([:boards, 1, :board], board)
+        |> put_in([:boards, 1, :turn], Board.next_turn(game_board.turn))
+        |> put_in([:boards, 1, :winner], Board.winning_board(board))
       else
         state
       end
@@ -46,7 +49,7 @@ defmodule BoardState do
   end
 
   def broadcast_change do
-    Phoenix.PubSub.broadcast(Tictactoe.PubSub, "board_state", %{event: "board_updated"})
+    Phoenix.PubSub.broadcast(Tictactoe.PubSub, "board_state", %{event: "board_updated", board: 1})
   end
 
 end
